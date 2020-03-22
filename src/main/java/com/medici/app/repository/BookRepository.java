@@ -1,18 +1,16 @@
 package com.medici.app.repository;
 
-import java.util.List;
-
 import org.springframework.cloud.gcp.data.firestore.FirestoreReactiveRepository;
-import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 
 import com.medici.app.entity.Book;
 
-@RepositoryRestResource(collectionResourceRel = "books", path = "book")
+import reactor.core.publisher.Flux;
+
 public interface BookRepository extends FirestoreReactiveRepository<Book> {
 
-	List<Book> findByAuthor(String author);
+	Flux<Book> findByAuthor(String author);
 
-	List<Book> findByYearGreaterThan(int year);
+	Flux<Book> findByYearGreaterThan(int year);
 
-	List<Book> findByAuthorAndYear(String author, int year);
+	Flux<Book> findByAuthorAndYear(String author, int year);
 }
