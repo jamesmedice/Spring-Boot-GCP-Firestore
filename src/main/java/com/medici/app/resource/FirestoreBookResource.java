@@ -61,7 +61,7 @@ public class FirestoreBookResource {
 	}
 
 	@RequestMapping(value = "/", method = RequestMethod.GET)
-	public ResponseEntity<?> findAll(@PathVariable String id) {
+	public ResponseEntity<?> findAll() {
 
 		try {
 

@@ -5,9 +5,6 @@ server:
     port: ${DEFAULT_PORT:80}
 
 spring:
-    data:
-        rest: 
-            base-path: /api
     cloud:
         config:
             namespace: default
