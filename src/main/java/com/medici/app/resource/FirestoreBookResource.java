@@ -24,6 +24,7 @@ import reactor.core.publisher.Mono;
  *
  */
 @RestController
+@RequestMapping(value = "/book")
 public class FirestoreBookResource {
 
 	protected Logger logger = Logger.getLogger(FirestoreBookResource.class.getName());

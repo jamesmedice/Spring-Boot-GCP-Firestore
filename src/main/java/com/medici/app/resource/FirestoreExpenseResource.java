@@ -24,6 +24,7 @@ import reactor.core.publisher.Mono;
  *
  */
 @RestController
+@RequestMapping(value = "/expense")
 public class FirestoreExpenseResource {
 
 	protected Logger logger = Logger.getLogger(FirestoreExpenseResource.class.getName());
