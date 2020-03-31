@@ -1,5 +1,9 @@
 package com.medici.app.resource;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,12 +16,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.api.core.ApiFuture;
+import com.google.cloud.firestore.DocumentSnapshot;
+import com.google.cloud.firestore.Firestore;
+import com.google.cloud.firestore.QuerySnapshot;
+import com.google.cloud.firestore.WriteResult;
 import com.medici.app.entity.Book;
-import com.medici.app.repository.BookRepository;
-
-import reactor.core.publisher.Flux;
-import reactor.core.publisher.Mono;
- 
 
 /**
  * 
@@ -28,19 +32,19 @@ import reactor.core.publisher.Mono;
 @RequestMapping(value = "/book")
 public class FirestoreBookResource {
 
+	private static final String BOOKS = "books";
+
 	protected Logger logger = Logger.getLogger(FirestoreBookResource.class.getName());
 
 	@Autowired
-	BookRepository bookRepository;
+	Firestore firestore;
 
 	@RequestMapping(value = "/", method = RequestMethod.POST)
 	public ResponseEntity<?> save(@RequestBody Book model) {
 
 		try {
-
-			Book payload = bookRepository.save(model).block();
-			return new ResponseEntity(payload, new HttpHeaders(), HttpStatus.OK);
-
+			WriteResult writeResult = this.firestore.collection(BOOKS).document(model.getId() != null ? model.getId() : UUID.randomUUID().toString()).set(model).get();
+			return new ResponseEntity(writeResult, new HttpHeaders(), HttpStatus.OK);
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
@@ -51,10 +55,9 @@ public class FirestoreBookResource {
 	public ResponseEntity<?> findById(@PathVariable String id) {
 
 		try {
-
-			Mono<Book> payload = bookRepository.findById(id);
+			ApiFuture<DocumentSnapshot> documentSnapshotApiFuture = this.firestore.collection(BOOKS).document(id).get();
+			Book payload = documentSnapshotApiFuture.get().toObject(Book.class);
 			return new ResponseEntity(payload, new HttpHeaders(), HttpStatus.OK);
-
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
@@ -65,24 +68,14 @@ public class FirestoreBookResource {
 	public ResponseEntity<?> findAll() {
 
 		try {
+			List<Map<String, Object>> payload = new ArrayList<>();
 
-			Flux<Book> payload = bookRepository.findAll();
+			ApiFuture<QuerySnapshot> results = this.firestore.collection(BOOKS).get();
+			results.get().getDocuments().stream().forEach(action -> {
+				payload.add(action.getData());
+			});
+
 			return new ResponseEntity(payload, new HttpHeaders(), HttpStatus.OK);
-
-		} catch (Exception e) {
-			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
-		}
-
-	}
-
-	@RequestMapping(value = "/count", method = RequestMethod.GET)
-	public ResponseEntity<?> count() {
-
-		try {
-
-			Mono<Long> payload = bookRepository.count();
-			return new ResponseEntity(payload, new HttpHeaders(), HttpStatus.OK);
-
 		} catch (Exception e) {
 			return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
 		}
