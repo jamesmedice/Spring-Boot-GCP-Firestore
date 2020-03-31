@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class Expense {
 
 	@DocumentId
-	Long id;
+	String id;
 
 	String partnumber;
 

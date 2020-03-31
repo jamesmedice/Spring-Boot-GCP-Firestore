@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class Book {
 
 	@DocumentId
-	Long id;
+	String id;
 
 	String title;
 
