@@ -37,7 +37,7 @@ public class FirestoreExpenseResource {
 
 		try {
 
-			Mono<Expense> payload = expensesRepository.save(expense);
+			Expense payload = expensesRepository.save(expense).block();
 			return new ResponseEntity(payload, new HttpHeaders(), HttpStatus.OK);
 
 		} catch (Exception e) {

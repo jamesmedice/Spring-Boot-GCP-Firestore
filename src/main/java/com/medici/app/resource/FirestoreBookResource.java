@@ -37,7 +37,7 @@ public class FirestoreBookResource {
 
 		try {
 
-			Mono<Book> payload = bookRepository.save(model);
+			Book payload = bookRepository.save(model).block();
 			return new ResponseEntity(payload, new HttpHeaders(), HttpStatus.OK);
 
 		} catch (Exception e) {
